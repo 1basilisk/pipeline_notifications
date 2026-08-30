@@ -25,8 +25,8 @@ public class NotificationRuleController {
             @Valid @RequestBody CreateNotificationRuleRequest request) {
 
         NotificationRule rule = new NotificationRule(
-                request.getPipelineName(),
-                request.getName(),
+            request.getName(),
+            request.getPipelineName(),
                 request.getEnvironment(),
                 request.getStatus(),
                 request.isEnabled()

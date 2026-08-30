@@ -1,6 +1,7 @@
 package com.basilisk.pipeline_notification_service.service;
 
 import com.basilisk.pipeline_notification_service.entity.NotificationRule;
+import com.basilisk.pipeline_notification_service.entity.PipelineEvent;
 import com.basilisk.pipeline_notification_service.repository.NotificationRuleRepository;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +27,18 @@ public class NotificationRuleService {
 
     public NotificationRule createRule(NotificationRule rule) {
         return repository.save(rule);
+    }
+
+    public List<NotificationRule> getEnabledRules() {
+        return repository.findByEnabledTrue();
+    }
+
+    public boolean matches(
+        NotificationRule rule,
+        PipelineEvent event) {
+
+    return rule.getPipelineName().equals(event.getPipelineName())
+            && rule.getEnvironment() == event.getEnvironment()
+            && rule.getStatus() == event.getStatus();
     }
 }
