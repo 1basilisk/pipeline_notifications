@@ -118,7 +118,8 @@ Main packages:
 - Spring Boot 4.1.1
 - Spring Web
 - Spring Data JPA
-- PostgreSQL
+- Aiven PostgreSQL
+- Swagger UI / OpenAPI
 - Validation
 - Maven
 - JUnit 5 + Spring Boot Test
@@ -166,40 +167,28 @@ Main packages:
 
 - Java 21+
 - Maven
-- PostgreSQL running locally
+- Docker Desktop with Docker Compose
+- Access to the configured Aiven PostgreSQL database
 
 ### 1. Configure the database
 
-The application expects PostgreSQL to be running and configured in `src/main/resources/application.properties`.
+The application uses Aiven PostgreSQL instead of a locally running PostgreSQL server. Database connection settings are supplied through the `.env` file and passed to the application by Docker Compose.
 
-Current configuration:
+Set these environment variables in `.env`:
 
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/pipeline_notification
-spring.datasource.username=postgres
-spring.datasource.password=${DB_PASSWORD}
-
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
+SPRING_DATASOURCE_URL=<Aiven PostgreSQL JDBC URL>
+SPRING_DATASOURCE_USERNAME=<Aiven PostgreSQL username>
+SPRING_DATASOURCE_PASSWORD=<Aiven PostgreSQL password>
 ```
 
-Set your password before running the app:
+Do not commit `.env` or share its password.
 
 ```powershell
-$env:DB_PASSWORD="your_postgres_password"
+docker compose up --build
 ```
 
-### 2. Start PostgreSQL
-
-Create a local database named `pipeline_notification` if it does not already exist.
-
-Example:
-
-```sql
-CREATE DATABASE pipeline_notification;
-```
-
-### 3. Run the application
+### 2. Run the application
 
 From the project root:
 
@@ -210,6 +199,16 @@ From the project root:
 The app will start on the default Spring Boot port:
 
 - `http://localhost:8080`
+
+## Swagger and OpenAPI
+
+Interactive API documentation is available through Swagger UI when the application is running:
+
+- Hosted Swagger UI: [https://pipeline-notifications.onrender.com/swagger-ui/index.html](https://pipeline-notifications.onrender.com/swagger-ui/index.html)
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- OpenAPI specification: `http://localhost:8080/v3/api-docs`
+
+Swagger UI can be used to inspect the REST endpoints and send requests to the running service.
 
 ## Database setup
 
@@ -227,7 +226,7 @@ The database schema is created/updated with:
 spring.jpa.hibernate.ddl-auto=update
 ```
 
-For test execution, the project includes an H2 profile at `src/test/resources/application-test.properties`, which is used to avoid depending on a local PostgreSQL instance during automated tests.
+For test execution, the project includes an H2 profile at `src/test/resources/application-test.properties`, which avoids depending on the Aiven PostgreSQL database during automated tests.
 
 ## Example API requests
 
@@ -325,7 +324,7 @@ If a rule is disabled, it will not trigger a notification.
 ./mvnw.cmd -Dspring.profiles.active=test test
 ```
 
-This project includes a test profile with H2 in-memory database configuration to make automated tests easier and not dependent on a local PostgreSQL installation.
+This project includes a test profile with H2 in-memory database configuration to make automated tests easier and independent of the Aiven PostgreSQL database.
 
 ## Notes
 
